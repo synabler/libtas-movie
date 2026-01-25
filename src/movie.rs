@@ -1,6 +1,6 @@
 //! Module that defines a movie.
 
-use std::str::FromStr;
+use core::str::FromStr as _;
 
 use crate::{
     config::{Config, InvalidConfigError},
@@ -42,10 +42,10 @@ impl LibTASMovie {
     }
 
     pub(crate) fn load_annotations(&mut self, string: &str) {
-        self.annotations = string.to_owned();
+        string.clone_into(&mut self.annotations);
     }
 
     pub(crate) fn load_editor(&mut self, string: &str) {
-        self.editor = string.to_owned();
+        string.clone_into(&mut self.editor);
     }
 }

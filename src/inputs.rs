@@ -1,6 +1,6 @@
 //! Module that defines an input sequence.
 
-use std::{fmt::Display, str::FromStr};
+use core::{fmt::Display, str::FromStr};
 
 /// An error while parsing inputs, containing the type and the string that caused the error.
 #[derive(Debug)]
@@ -36,12 +36,12 @@ impl FromStr for KeyboardInput {
         else {
             return Err(InvalidInputsError::Keyboard(s.to_owned()));
         };
-        Ok(KeyboardInput(keys))
+        Ok(Self(keys))
     }
 }
 
 impl Display for KeyboardInput {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "K")?;
         for (idx, key) in self.0.iter().enumerate() {
             if idx != 0 {
@@ -76,7 +76,7 @@ impl FromStr for ReferenceMode {
 }
 
 impl Display for ReferenceMode {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             Self::Absolute => write!(f, "A"),
             Self::Relative => write!(f, "R"),
@@ -172,7 +172,7 @@ impl FromStr for MouseInput {
 }
 
 impl Display for MouseInput {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(
             f,
             "M{}:{}:{}:{}{}{}{}{}:0",
@@ -216,7 +216,7 @@ impl FromStr for Input {
             return Err(InvalidInputsError::Line(line.to_owned()));
         };
 
-        let mut input = Input::default();
+        let mut input = Self::default();
         for section in line.split('|') {
             match section.chars().next() {
                 Some('K') => {
@@ -225,9 +225,15 @@ impl FromStr for Input {
                 Some('M') => {
                     input.mouse = Some(section.parse()?);
                 }
-                Some('C') => todo!(),
-                Some('F') => todo!(),
-                Some('T') => todo!(),
+                Some('C') => {
+                    // TODO
+                }
+                Some('F') => {
+                    // TODO
+                }
+                Some('T') => {
+                    // TODO
+                }
                 _ => {
                     return Err(InvalidInputsError::Line(line.to_owned()));
                 }
@@ -238,7 +244,7 @@ impl FromStr for Input {
 }
 
 impl Display for Input {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         write!(f, "|")?;
         if let Some(keyboard) = &self.keyboard {
             write!(f, "{keyboard}|")?;
@@ -254,7 +260,7 @@ impl Display for Input {
 #[derive(Clone, Debug, Default)]
 pub struct Inputs(pub Vec<Input>);
 
-impl std::ops::Index<usize> for Inputs {
+impl core::ops::Index<usize> for Inputs {
     type Output = Input;
 
     fn index(&self, index: usize) -> &Self::Output {
@@ -275,12 +281,12 @@ impl FromStr for Inputs {
             }
             inputs.push(line.parse::<Input>()?);
         }
-        Ok(Inputs(inputs))
+        Ok(Self(inputs))
     }
 }
 
 impl Display for Inputs {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         for input in &self.0 {
             writeln!(f, "{input}")?;
         }

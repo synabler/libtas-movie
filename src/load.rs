@@ -1,6 +1,6 @@
 //! Module for loading a movie file.
 
-use std::{fs::File, io::Read, path::Path};
+use std::{fs::File, io::Read as _, path::Path};
 
 use crate::{config::InvalidConfigError, inputs::InvalidInputsError, movie::LibTASMovie};
 use flate2::read::GzDecoder;
@@ -26,7 +26,8 @@ pub enum LoadError {
 /// Loads a movie file in `path`.
 ///
 /// # Example
-/// ```
+/// ```ignore
+/// use libtas_movie::load::load_movie;
 /// let movie = load_movie("path/to/tas.ltm").unwrap();
 /// ```
 pub fn load_movie<P: AsRef<Path>>(path: P) -> Result<LibTASMovie, LoadError> {

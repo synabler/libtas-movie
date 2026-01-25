@@ -3,9 +3,17 @@ name = "libtas-movie"
 version = "0.1.0"
 edition = "2024"
 description = "A utility for accessing libTAS movie files"
+keywords = ["tas", "libtas"]
+categories = ["parser-implementations"]
 repository = "https://github.com/synabler/libtas-movie"
 license = "MIT"
 
 [dependencies]
 flate2 = "1.1.8"
 tar = "0.4.44"
+
+[lints.clippy]
+use_self = "warn"
+std_instead_of_core = "warn"
+unused_trait_names = "warn"
+todo = "deny"

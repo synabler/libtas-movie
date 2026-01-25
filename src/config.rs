@@ -1,6 +1,6 @@
 //! Module that defines a config of a movie file.
 
-use std::{fmt::Display, str::FromStr};
+use core::{fmt::Display, str::FromStr};
 
 /// An error while parsing a config, containing the string that caused the error.
 #[derive(Debug)]
@@ -40,7 +40,7 @@ macro_rules! impl_str_io {
         }
 
         impl Display for $struct {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
                 writeln!(f, $group_marker)?;
                 $(
                     writeln!(f, "{}={}", $key, self.$field)?;
@@ -182,7 +182,7 @@ pub struct Config {
 }
 
 impl Display for Config {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         writeln!(f, "{}", self.general)?;
         write!(f, "{}", self.mainthread_timetrack)
     }
