@@ -1,14 +1,24 @@
+use std::str::FromStr;
+
+use crate::config::{Config, InvalidConfig};
+
 #[derive(Clone, Debug, Default)]
 pub struct LibTASMovie {
-    config: String,
+    config: Config,
     inputs: String,
     annotations: String,
     editor: String,
 }
 
 impl LibTASMovie {
-    pub(crate) fn load_config(&mut self, string: &str) {
-        self.config = string.to_owned();
+    pub(crate) fn load_config(&mut self, string: &str) -> Result<(), InvalidConfig> {
+        match Config::from_str(string) {
+            Ok(config) => {
+                self.config = config;
+                Ok(())
+            }
+            Err(err) => Err(err),
+        }
     }
 
     pub(crate) fn load_inputs(&mut self, string: &str) {
