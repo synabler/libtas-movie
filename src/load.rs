@@ -1,6 +1,6 @@
 use std::{fs::File, io::Read, path::Path};
 
-use crate::movie::LibTASMovie;
+use crate::{config::InvalidConfig, movie::LibTASMovie};
 use flate2::read::GzDecoder;
 use tar::Archive;
 
@@ -10,6 +10,7 @@ pub enum LoadError {
     InvalidArchive,
     ExtraEntry,
     InsufficientEntry,
+    InvalidConfig(InvalidConfig),
 }
 
 pub fn load_movie<P: AsRef<Path>>(path: P) -> Result<LibTASMovie, LoadError> {
@@ -43,7 +44,9 @@ pub fn load_movie<P: AsRef<Path>>(path: P) -> Result<LibTASMovie, LoadError> {
         match entry.path() {
             Ok(path) if path.as_os_str() == "config.ini" => {
                 loaded[0] = true;
-                movie.load_config(&string);
+                if let Err(err) = movie.load_config(&string) {
+                    return Err(LoadError::InvalidConfig(err));
+                }
             }
             Ok(path) if path.as_os_str() == "inputs" => {
                 loaded[1] = true;
