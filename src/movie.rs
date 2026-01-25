@@ -7,21 +7,13 @@ use crate::{
 
 #[derive(Clone, Debug, Default)]
 pub struct LibTASMovie {
-    config: Config,
-    inputs: Inputs,
-    annotations: String,
-    editor: String,
+    pub config: Config,
+    pub inputs: Inputs,
+    pub annotations: String,
+    pub editor: String,
 }
 
 impl LibTASMovie {
-    pub fn config(&self) -> &Config {
-        &self.config
-    }
-
-    pub fn config_mut(&mut self) -> &mut Config {
-        &mut self.config
-    }
-
     pub(crate) fn load_config(&mut self, string: &str) -> Result<(), InvalidConfig> {
         match Config::from_str(string) {
             Ok(config) => {

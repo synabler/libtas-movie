@@ -5,10 +5,9 @@ use libtas_movie::load::{LoadError, load_movie};
 #[test]
 fn test_config() {
     let movie = load_movie("tests/movies/221769_Trapped_5.ltm").unwrap();
-    println!("{movie:?}");
 
     // check config
-    let general = &movie.config().general;
+    let general = &movie.config.general;
     assert_eq!(general.authors, "synabler");
     assert_eq!(general.auto_restart, false);
     assert_eq!(general.frame_count, 456);
@@ -31,7 +30,7 @@ fn test_config() {
     assert_eq!(general.savestate_frame_count, 456);
     assert_eq!(general.variable_framerate, false);
 
-    let timetrack = &movie.config().mainthread_timetrack;
+    let timetrack = &movie.config.mainthread_timetrack;
     assert_eq!(timetrack.get_tick_count, -1);
     assert_eq!(timetrack.get_tick_count64, -1);
     assert_eq!(timetrack.query_performance_counter, -1);
@@ -45,7 +44,16 @@ fn test_config() {
 
     // check Display
     let config_str = read_to_string("tests/movies/221769_Trapped_5_config.ini").unwrap();
-    assert_eq!(movie.config().to_string(), config_str);
+    assert_eq!(movie.config.to_string(), config_str);
+}
+
+#[test]
+fn test_inputs() {
+    let movie = load_movie("tests/movies/221769_Trapped_5.ltm").unwrap();
+
+    // check Display
+    let config_str = read_to_string("tests/movies/221769_Trapped_5_inputs").unwrap();
+    assert_eq!(movie.inputs.to_string(), config_str);
 }
 
 /// If a file doesn't exist, it should fail with `NotFound`.

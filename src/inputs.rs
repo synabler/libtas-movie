@@ -1,10 +1,44 @@
-use std::str::FromStr;
+use std::{fmt::Display, str::FromStr};
 
 #[derive(Debug)]
 pub enum InvalidInputs {
     Line(String),
     Keyboard(String),
     Mouse(String),
+}
+
+#[derive(Clone, Debug, Default)]
+pub struct KeyboardInput(pub Vec<u32>);
+
+impl FromStr for KeyboardInput {
+    type Err = InvalidInputs;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let Some(s) = s.strip_prefix('K') else {
+            return Err(InvalidInputs::Keyboard(s.to_owned()));
+        };
+        let Ok(keys) = s
+            .split(':')
+            .map(|s| u32::from_str_radix(s, 16))
+            .collect::<Result<Vec<u32>, _>>()
+        else {
+            return Err(InvalidInputs::Keyboard(s.to_owned()));
+        };
+        Ok(KeyboardInput(keys))
+    }
+}
+
+impl Display for KeyboardInput {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "K")?;
+        for (idx, key) in self.0.iter().enumerate() {
+            if idx != 0 {
+                write!(f, ":")?;
+            }
+            write!(f, "{key:x}")?;
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, Debug, Default)]
@@ -26,24 +60,12 @@ impl FromStr for ReferenceMode {
     }
 }
 
-#[derive(Clone, Debug, Default)]
-pub struct KeyboardInput(pub Vec<u32>);
-
-impl FromStr for KeyboardInput {
-    type Err = InvalidInputs;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let Some(s) = s.strip_prefix('K') else {
-            return Err(InvalidInputs::Keyboard(s.to_owned()));
-        };
-        let Ok(keys) = s
-            .split(':')
-            .map(|s| u32::from_str_radix(s, 16))
-            .collect::<Result<Vec<u32>, _>>()
-        else {
-            return Err(InvalidInputs::Keyboard(s.to_owned()));
-        };
-        Ok(KeyboardInput(keys))
+impl Display for ReferenceMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Absolute => write!(f, "A"),
+            Self::Relative => write!(f, "R"),
+        }
     }
 }
 
@@ -112,6 +134,23 @@ impl FromStr for MouseInput {
     }
 }
 
+impl Display for MouseInput {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "M{}:{}:{}:{}{}{}{}{}:0",
+            self.xpos,
+            self.ypos,
+            self.reference_mode,
+            if self.left_click { '1' } else { '.' },
+            if self.middle_click { '2' } else { '.' },
+            if self.right_click { '3' } else { '.' },
+            if self.button4 { '4' } else { '.' },
+            if self.button5 { '5' } else { '.' },
+        )
+    }
+}
+
 #[derive(Clone, Debug, Default)]
 pub struct Input {
     pub keyboard: Option<KeyboardInput>,
@@ -157,6 +196,19 @@ impl FromStr for Input {
     }
 }
 
+impl Display for Input {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "|")?;
+        if let Some(keyboard) = &self.keyboard {
+            write!(f, "{keyboard}|")?;
+        }
+        if let Some(mouse) = &self.mouse {
+            write!(f, "{mouse}|")?;
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Default)]
 pub struct Inputs(pub Vec<Input>);
 
@@ -174,5 +226,14 @@ impl FromStr for Inputs {
             inputs.push(line.parse::<Input>()?);
         }
         Ok(Inputs(inputs))
+    }
+}
+
+impl Display for Inputs {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        for input in &self.0 {
+            writeln!(f, "{input}")?;
+        }
+        Ok(())
     }
 }
