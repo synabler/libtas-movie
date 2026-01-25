@@ -1,6 +1,6 @@
 use std::{fs::File, io::Read, path::Path};
 
-use crate::{config::InvalidConfig, movie::LibTASMovie};
+use crate::{config::InvalidConfig, inputs::InvalidInputs, movie::LibTASMovie};
 use flate2::read::GzDecoder;
 use tar::Archive;
 
@@ -11,6 +11,7 @@ pub enum LoadError {
     ExtraEntry,
     InsufficientEntry,
     InvalidConfig(InvalidConfig),
+    InvalidInputs(InvalidInputs),
 }
 
 pub fn load_movie<P: AsRef<Path>>(path: P) -> Result<LibTASMovie, LoadError> {
@@ -50,7 +51,9 @@ pub fn load_movie<P: AsRef<Path>>(path: P) -> Result<LibTASMovie, LoadError> {
             }
             Ok(path) if path.as_os_str() == "inputs" => {
                 loaded[1] = true;
-                movie.load_inputs(&string);
+                if let Err(err) = movie.load_inputs(&string) {
+                    return Err(LoadError::InvalidInputs(err));
+                }
             }
             Ok(path) if path.as_os_str() == "annotations.txt" => {
                 loaded[2] = true;
