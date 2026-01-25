@@ -1,4 +1,4 @@
-use libtas_movie::{LoadError, load_movie};
+use libtas_movie::load::{LoadError, load_movie};
 
 #[test]
 fn test_load() -> Result<(), LoadError> {
