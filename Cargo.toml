@@ -2,6 +2,9 @@
 name = "libtas-movie"
 version = "0.1.0"
 edition = "2024"
+description = "A utility for accessing libTAS movie files"
+repository = "https://github.com/synabler/libtas-movie"
+license = "MIT"
 
 [dependencies]
 flate2 = "1.1.8"
