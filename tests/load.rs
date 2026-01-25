@@ -1,10 +1,45 @@
 use libtas_movie::load::{LoadError, load_movie};
 
 #[test]
-fn test_load() -> Result<(), LoadError> {
-    let movie = load_movie("tests/movies/221769_Trapped_5.ltm")?;
+fn test_load() {
+    let movie = load_movie("tests/movies/221769_Trapped_5.ltm").unwrap();
     println!("{movie:?}");
-    Ok(())
+
+    // check config
+    let general = &movie.config().general;
+    assert_eq!(general.authors, "synabler");
+    assert_eq!(general.auto_restart, false);
+    assert_eq!(general.frame_count, 456);
+    assert_eq!(general.framerate_den, 1);
+    assert_eq!(general.framerate_num, 20);
+    assert_eq!(general.game_name, "ruffle");
+    assert_eq!(general.initial_monotonic_time_nsec, 0);
+    assert_eq!(general.initial_monotonic_time_sec, 1);
+    assert_eq!(general.initial_time_nsec, 0);
+    assert_eq!(general.initial_time_sec, 1);
+    assert_eq!(general.length_nsec, 800000000);
+    assert_eq!(general.length_sec, 22);
+    assert_eq!(general.libtas_major_version, 1);
+    assert_eq!(general.libtas_minor_version, 4);
+    assert_eq!(general.libtas_patch_version, 7);
+    assert_eq!(general.md5, "c9b4f1b544725cb0d9d784c35232a52d");
+    assert_eq!(general.mouse_support, true);
+    assert_eq!(general.nb_controllers, 0);
+    assert_eq!(general.rerecord_count, 101);
+    assert_eq!(general.savestate_frame_count, 456);
+    assert_eq!(general.variable_framerate, false);
+
+    let timetrack = &movie.config().mainthread_timetrack;
+    assert_eq!(timetrack.get_tick_count, -1);
+    assert_eq!(timetrack.get_tick_count64, -1);
+    assert_eq!(timetrack.query_performance_counter, -1);
+    assert_eq!(timetrack.clock, -1);
+    assert_eq!(timetrack.clock_gettime_monotonic, -1);
+    assert_eq!(timetrack.clock_gettime_real, -1);
+    assert_eq!(timetrack.gettimeofday, -1);
+    assert_eq!(timetrack.sdl_getperformancecounter, -1);
+    assert_eq!(timetrack.sdl_getticks, -1);
+    assert_eq!(timetrack.time, -1);
 }
 
 /// If a file doesn't exist, it should fail with `NotFound`.
