@@ -68,7 +68,7 @@ pub fn load_movie<P: AsRef<Path>>(path: P) -> Result<LibTASMovie, LoadError> {
             }
         }
     }
-    if loaded.as_slice() != &[true, true, true, true] {
+    if loaded.as_slice() != [true, true, true, true] {
         return Err(LoadError::InsufficientEntry);
     }
 
