@@ -1,15 +1,14 @@
-use std::str::FromStr;
+use std::{fmt::Display, str::FromStr};
 
 #[derive(Debug)]
 #[expect(dead_code)]
 pub struct InvalidConfig(String);
 
-macro_rules! impl_from_str {
+macro_rules! impl_str_io {
     (
         $struct:ident,
         $group_marker:literal,
         $($key:literal => $field:ident: $type:ty),*
-        $(, strings: $($str_key:literal => $str_field:ident),*)?
     ) => {
         impl FromStr for $struct {
             type Err = InvalidConfig;
@@ -22,21 +21,26 @@ macro_rules! impl_from_str {
                 let mut config = Self::default();
                 for line in s.lines().skip(1) {
                     let Some((key, value)) = line.split_once('=') else {
-                        continue;
+                        return Err(InvalidConfig(line.to_owned()));
                     };
                     match key {
                         $(
                             $key => config.$field = value.parse::<$type>().map_err(|_| InvalidConfig(key.to_owned()))?,
                         )*
-                        $(
-                            $(
-                                $str_key => config.$str_field = value.to_string(),
-                            )*
-                        )?
                         _ => {}
                     }
                 }
                 Ok(config)
+            }
+        }
+
+        impl Display for $struct {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                writeln!(f, $group_marker)?;
+                $(
+                    writeln!(f, "{}={}", $key, self.$field)?;
+                )*
+                Ok(())
             }
         }
     };
@@ -67,13 +71,15 @@ pub struct GeneralConfig {
     pub variable_framerate: bool,
 }
 
-impl_from_str!(
+impl_str_io!(
     GeneralConfig,
     "[General]",
+    "authors" => authors: String,
     "auto_restart" => auto_restart: bool,
     "frame_count" => frame_count: u64,
     "framerate_den" => framerate_den: u64,
     "framerate_num" => framerate_num: u64,
+    "game_name" => game_name: String,
     "initial_monotonic_time_nsec" => initial_monotonic_time_nsec: u64,
     "initial_monotonic_time_sec" => initial_monotonic_time_sec: u64,
     "initial_time_nsec" => initial_time_nsec: u64,
@@ -83,15 +89,12 @@ impl_from_str!(
     "libtas_major_version" => libtas_major_version: u32,
     "libtas_minor_version" => libtas_minor_version: u32,
     "libtas_patch_version" => libtas_patch_version: u32,
+    "md5" => md5: String,
     "mouse_support" => mouse_support: bool,
     "nb_controllers" => nb_controllers: u32,
     "rerecord_count" => rerecord_count: u64,
     "savestate_frame_count" => savestate_frame_count: u64,
-    "variable_framerate" => variable_framerate: bool,
-    strings:
-    "authors" => authors,
-    "game_name" => game_name,
-    "md5" => md5
+    "variable_framerate" => variable_framerate: bool
 );
 
 #[derive(Clone, Debug, Default)]
@@ -108,7 +111,7 @@ pub struct TimetrackConfig {
     pub time: i64,
 }
 
-impl_from_str!(
+impl_str_io!(
     TimetrackConfig,
     "[mainthread_timetrack]",
     "GetTickCount" => get_tick_count: i64,
@@ -127,6 +130,13 @@ impl_from_str!(
 pub struct Config {
     pub general: GeneralConfig,
     pub mainthread_timetrack: TimetrackConfig,
+}
+
+impl Display for Config {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "{}", self.general)?;
+        write!(f, "{}", self.mainthread_timetrack)
+    }
 }
 
 impl FromStr for Config {

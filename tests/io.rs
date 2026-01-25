@@ -1,7 +1,9 @@
+use std::fs::read_to_string;
+
 use libtas_movie::load::{LoadError, load_movie};
 
 #[test]
-fn test_load() {
+fn test_config() {
     let movie = load_movie("tests/movies/221769_Trapped_5.ltm").unwrap();
     println!("{movie:?}");
 
@@ -40,6 +42,10 @@ fn test_load() {
     assert_eq!(timetrack.sdl_getperformancecounter, -1);
     assert_eq!(timetrack.sdl_getticks, -1);
     assert_eq!(timetrack.time, -1);
+
+    // check Display
+    let config_str = read_to_string("tests/movies/221769_Trapped_5_config.ini").unwrap();
+    assert_eq!(movie.config().to_string(), config_str);
 }
 
 /// If a file doesn't exist, it should fail with `NotFound`.
