@@ -1,19 +1,34 @@
+//! Module for loading a movie file.
+
 use std::{fs::File, io::Read, path::Path};
 
-use crate::{config::InvalidConfig, inputs::InvalidInputs, movie::LibTASMovie};
+use crate::{config::InvalidConfigError, inputs::InvalidInputsError, movie::LibTASMovie};
 use flate2::read::GzDecoder;
 use tar::Archive;
 
+/// An error while loading a movie file.
 #[derive(Debug)]
 pub enum LoadError {
+    /// An error occurred while opening a file.
     FileError(std::io::Error),
+    /// The file is not a `tar.gz` archive.
     InvalidArchive,
+    /// An extra file is in the archive.
     ExtraEntry,
+    /// A file is missing in the archive.
     InsufficientEntry,
-    InvalidConfig(InvalidConfig),
-    InvalidInputs(InvalidInputs),
+    /// `Config` is incorrect.
+    InvalidConfig(InvalidConfigError),
+    /// `Inputs` is incorrect.
+    InvalidInputs(InvalidInputsError),
 }
 
+/// Loads a movie file in `path`.
+///
+/// # Example
+/// ```
+/// let movie = load_movie("path/to/tas.ltm").unwrap();
+/// ```
 pub fn load_movie<P: AsRef<Path>>(path: P) -> Result<LibTASMovie, LoadError> {
     // open the movie file as .tar.gz
     let mut archive = match File::open(path) {

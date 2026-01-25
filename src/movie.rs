@@ -1,20 +1,27 @@
+//! Module that defines a movie.
+
 use std::str::FromStr;
 
 use crate::{
-    config::{Config, InvalidConfig},
-    inputs::{Inputs, InvalidInputs},
+    config::{Config, InvalidConfigError},
+    inputs::{Inputs, InvalidInputsError},
 };
 
+/// A libTAS movie.
 #[derive(Clone, Debug, Default)]
 pub struct LibTASMovie {
+    /// Config corresponding to `config.ini`.
     pub config: Config,
+    /// Movie inputs corresponding to `inputs`.
     pub inputs: Inputs,
+    /// Annotations corresponding to `annotations.txt` (TODO).
     pub annotations: String,
+    /// TAS editor information corresponding to `editor.ini` (TODO).
     pub editor: String,
 }
 
 impl LibTASMovie {
-    pub(crate) fn load_config(&mut self, string: &str) -> Result<(), InvalidConfig> {
+    pub(crate) fn load_config(&mut self, string: &str) -> Result<(), InvalidConfigError> {
         match Config::from_str(string) {
             Ok(config) => {
                 self.config = config;
@@ -24,7 +31,7 @@ impl LibTASMovie {
         }
     }
 
-    pub(crate) fn load_inputs(&mut self, string: &str) -> Result<(), InvalidInputs> {
+    pub(crate) fn load_inputs(&mut self, string: &str) -> Result<(), InvalidInputsError> {
         match Inputs::from_str(string) {
             Ok(inputs) => {
                 self.inputs = inputs;
