@@ -46,7 +46,7 @@ macro_rules! impl_str_io {
     };
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct GeneralConfig {
     pub authors: String,
     pub auto_restart: bool,
@@ -97,7 +97,7 @@ impl_str_io!(
     "variable_framerate" => variable_framerate: bool
 );
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct TimetrackConfig {
     pub get_tick_count: i64,
     pub get_tick_count64: i64,

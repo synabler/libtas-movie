@@ -7,7 +7,7 @@ pub enum InvalidInputs {
     Mouse(String),
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct KeyboardInput(pub Vec<u32>);
 
 impl FromStr for KeyboardInput {
@@ -41,7 +41,7 @@ impl Display for KeyboardInput {
     }
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum ReferenceMode {
     #[default]
     Absolute,
@@ -69,7 +69,7 @@ impl Display for ReferenceMode {
     }
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct MouseInput {
     pub xpos: i32,
     pub ypos: i32,
@@ -151,7 +151,7 @@ impl Display for MouseInput {
     }
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Input {
     pub keyboard: Option<KeyboardInput>,
     pub mouse: Option<MouseInput>,
@@ -211,6 +211,14 @@ impl Display for Input {
 
 #[derive(Clone, Debug, Default)]
 pub struct Inputs(pub Vec<Input>);
+
+impl std::ops::Index<usize> for Inputs {
+    type Output = Input;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.0[index]
+    }
+}
 
 impl FromStr for Inputs {
     type Err = InvalidInputs;

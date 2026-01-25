@@ -1,6 +1,9 @@
 use std::fs::read_to_string;
 
-use libtas_movie::load::{LoadError, load_movie};
+use libtas_movie::{
+    inputs::{KeyboardInput, ReferenceMode},
+    load::{LoadError, load_movie},
+};
 
 #[test]
 fn test_config() {
@@ -51,6 +54,25 @@ fn test_config() {
 fn test_inputs() {
     let movie = load_movie("tests/movies/221769_Trapped_5.ltm").unwrap();
 
+    // check keyboard
+    let frame = movie.inputs[260].clone();
+    let keyboard = frame.keyboard.as_ref().unwrap();
+    assert_eq!(keyboard, &KeyboardInput(vec![0x7a, 0xff53]));
+    let frame = movie.inputs[1].clone();
+    assert!(frame.keyboard.is_none());
+
+    // check mouse
+    let frame = movie.inputs[21].clone();
+    let mouse = frame.mouse.as_ref().unwrap();
+    assert_eq!(mouse.xpos, 166);
+    assert_eq!(mouse.ypos, 270);
+    assert_eq!(mouse.reference_mode, ReferenceMode::Absolute);
+    assert!(mouse.left_click);
+    assert!(!mouse.middle_click);
+    assert!(!mouse.right_click);
+    assert!(!mouse.button4);
+    assert!(!mouse.button5);
+
     // check Display
     let config_str = read_to_string("tests/movies/221769_Trapped_5_inputs").unwrap();
     assert_eq!(movie.inputs.to_string(), config_str);
@@ -67,7 +89,7 @@ fn test_load_not_exist() {
     }
 }
 
-/// If a file is not a .tar.gz file, it should fail with `InvalidArchive`.
+/// If a file is not a `.tar.gz` file, it should fail with `InvalidArchive`.
 #[test]
 fn test_load_not_movie() {
     match load_movie("tests/invalid_movies/not_movie.txt") {
