@@ -2,7 +2,9 @@ use libtas_movie::{LoadError, load_movie};
 
 #[test]
 fn test_load() -> Result<(), LoadError> {
-    load_movie("tests/movies/221769_Trapped_5.ltm")
+    let movie = load_movie("tests/movies/221769_Trapped_5.ltm")?;
+    println!("{movie:?}");
+    Ok(())
 }
 
 /// If a file doesn't exist, it should fail with `NotFound`.
