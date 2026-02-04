@@ -2,7 +2,7 @@ use std::fs::read_to_string;
 
 use libtas_movie::{
     inputs::{KeyboardInput, ReferenceMode},
-    load::{LoadError, load_movie},
+    movie::{LoadError, load_movie},
 };
 
 #[test]
