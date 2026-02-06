@@ -175,7 +175,7 @@ impl_str_io!(
 );
 
 /// Config of a movie.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Config {
     pub general: GeneralConfig,
     pub mainthread_timetrack: TimetrackConfig,

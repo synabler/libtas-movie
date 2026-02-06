@@ -78,6 +78,16 @@ fn test_inputs() {
     assert_eq!(movie.inputs.to_string(), config_str);
 }
 
+#[test]
+fn test_compress() {
+    let movie = load_movie("tests/movies/221769_Trapped_5.ltm").unwrap();
+    movie
+        .save_to_path("tests/movies/221769_Trapped_5_dbg.tar.gz")
+        .unwrap();
+    let reloaded = load_movie("tests/movies/221769_Trapped_5_dbg.tar.gz").unwrap();
+    assert_eq!(movie, reloaded);
+}
+
 /// If a file doesn't exist, it should fail with `NotFound`.
 #[test]
 fn test_load_not_exist() {

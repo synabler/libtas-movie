@@ -257,7 +257,7 @@ impl Display for Input {
 }
 
 /// A sequence of inputs, one per frame.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Inputs(pub Vec<Input>);
 
 impl core::ops::Index<usize> for Inputs {

@@ -8,8 +8,8 @@ use crate::{
 };
 use std::{fs::File, io::Read as _, path::Path};
 
-use flate2::read::GzDecoder;
-use tar::Archive;
+use flate2::{Compression, read::GzDecoder, write::GzEncoder};
+use tar::{Archive, Builder, Header};
 
 /// An error while loading a movie file.
 #[derive(Debug)]
@@ -29,7 +29,7 @@ pub enum LoadError {
 }
 
 /// A libTAS movie.
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct LibTASMovie {
     /// Config corresponding to `config.ini`.
     pub config: Config,
@@ -68,6 +68,35 @@ impl LibTASMovie {
 
     pub(crate) fn load_editor(&mut self, string: &str) {
         string.clone_into(&mut self.editor);
+    }
+
+    /// Saves the TAS into a byte sequence representing the `.ltm` file.
+    pub fn compress(&self) -> std::io::Result<Vec<u8>> {
+        let bytes = vec![];
+        let enc = GzEncoder::new(bytes, Compression::default());
+        let mut tar = Builder::new(enc);
+
+        let mut header = Header::new_gnu();
+        for (file_name, data) in [
+            ("config.ini", &self.config.to_string()),
+            ("inputs", &self.inputs.to_string()),
+            ("annotations.txt", &self.annotations),
+            ("editor.ini", &self.editor),
+        ] {
+            header.set_path(file_name)?;
+            header.set_size(data.len() as u64);
+            header.set_cksum();
+            tar.append(&header, data.as_bytes())?;
+        }
+
+        let enc = tar.into_inner()?;
+        enc.finish()
+    }
+
+    /// Saves the TAS into `path`.
+    pub fn save_to_path<P: AsRef<Path>>(&self, path: P) -> std::io::Result<()> {
+        let data = self.compress()?;
+        std::fs::write(path, data)
     }
 }
 
