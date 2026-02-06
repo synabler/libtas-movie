@@ -11,7 +11,7 @@ pub enum InvalidInputsError {
 }
 
 /// A keyboard input in a frame.
-/// Each element is the Xlib KeySym value of a key.
+/// Each element is the [Xlib KeySym value](https://www.x.org/releases/X11R7.7/doc/xproto/x11protocol.html#keysym_encoding) of a key.
 ///
 /// # Syntax
 /// `KeyboardInput` starts with `K`, followed by an unordered list of keys,
@@ -256,7 +256,7 @@ impl Display for Input {
     }
 }
 
-/// A sequence of inputs, one per frame.
+/// A sequence of [`Input`]s, one per frame.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct Inputs(pub Vec<Input>);
 
