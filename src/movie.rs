@@ -85,6 +85,7 @@ impl LibTASMovie {
         ] {
             header.set_path(file_name)?;
             header.set_size(data.len() as u64);
+            header.set_mode(0o644);
             header.set_cksum();
             tar.append(&header, data.as_bytes())?;
         }
