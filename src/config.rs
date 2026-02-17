@@ -52,7 +52,7 @@ macro_rules! impl_str_io {
 }
 
 /// `General` config.
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct GeneralConfig {
     /// Author(s) of the movie.
     pub authors: String,
@@ -129,13 +129,40 @@ impl_str_io!(
     "variable_framerate" => variable_framerate: bool
 );
 
+impl Default for GeneralConfig {
+    fn default() -> Self {
+        Self {
+            authors: "".to_owned(),
+            auto_restart: false,
+            frame_count: 0,
+            framerate_den: 1,
+            framerate_num: 60,
+            game_name: "".to_owned(),
+            initial_monotonic_time_nsec: 0,
+            initial_monotonic_time_sec: 1,
+            initial_time_nsec: 0,
+            initial_time_sec: 1,
+            length_nsec: 0,
+            length_sec: 0,
+            libtas_major_version: 1,
+            libtas_minor_version: 4,
+            libtas_patch_version: 7,
+            md5: "".to_owned(),
+            mouse_support: true,
+            nb_controllers: 0,
+            rerecord_count: 0,
+            savestate_frame_count: 0,
+            variable_framerate: false,
+        }
+    }
+}
+
 /// `mainthread_timetrack` config.
 /// Each field denotes how many times each function is called
 /// before advancing the deterministic timer, with `-1` meaning disabled.
 ///
-/// (TODO) `Default` is wrong, it should be all -1.
-/// Or better yet, use `Option<u64>`.
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+/// (TODO) use `Option<u64>`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct TimetrackConfig {
     /// `GetTickCount`
     pub get_tick_count: i64,
@@ -173,6 +200,23 @@ impl_str_io!(
     "sdl_getticks" => sdl_getticks: i64,
     "time" => time: i64
 );
+
+impl Default for TimetrackConfig {
+    fn default() -> Self {
+        Self {
+            get_tick_count: -1,
+            get_tick_count64: -1,
+            query_performance_counter: -1,
+            clock: -1,
+            clock_gettime_monotonic: -1,
+            clock_gettime_real: -1,
+            gettimeofday: -1,
+            sdl_getperformancecounter: -1,
+            sdl_getticks: -1,
+            time: -1,
+        }
+    }
+}
 
 /// Config of a movie.
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
